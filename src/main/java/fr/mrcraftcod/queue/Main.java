@@ -2,18 +2,24 @@ package fr.mrcraftcod.queue;
 
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javax.imageio.ImageIO;
+import java.awt.Taskbar;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 
@@ -37,9 +43,29 @@ public class Main extends Application{
 		stage.setTitle("Queues");
 		stage.setScene(scene);
 		stage.sizeToScene();
+		final var icon = getIcon();
+		if(Objects.nonNull(icon)){
+			setIcon(icon);
+		}
 		//stage.setResizable(false);
 		stage.getScene().getStylesheets().add(Main.class.getResource("/jfx/base.css").toExternalForm());
 		stage.show();
+	}
+	
+	private Image getIcon(){
+		try{
+			return SwingFXUtils.toFXImage(ImageIO.read(Main.class.getResource("/jfx/mohand.png")), null);
+		}
+		catch(IOException e){
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	private void setIcon(Image icon){
+		this.stage.getIcons().clear();
+		this.stage.getIcons().add(icon);
+		Taskbar.getTaskbar().setIconImage(SwingFXUtils.fromFXImage(icon, null));
 	}
 	
 	@SuppressWarnings("Duplicates")
