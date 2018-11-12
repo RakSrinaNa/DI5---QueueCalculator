@@ -180,7 +180,11 @@ public class Main extends Application{
 			try{
 				runnable.call();
 			}
-			catch(Exception ignored){
+			catch(BadInputException e2){
+				System.err.println(e2.getMessage());
+			}
+			catch(Exception e2){
+				e2.printStackTrace();
 			}
 		};
 		
@@ -215,6 +219,9 @@ public class Main extends Application{
 		
 		VBox.setVgrow(inputs, Priority.ALWAYS);
 		HBox.setHgrow(inputs, Priority.ALWAYS);
+		
+		validButton.fire();
+		
 		return root;
 	}
 }
