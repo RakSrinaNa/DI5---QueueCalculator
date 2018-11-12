@@ -1,23 +1,19 @@
 package fr.mrcraftcod.queue;
 
 import javafx.application.Application;
-import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import java.awt.Taskbar;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Optional;
-import java.util.function.Consumer;
 
 /**
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 2018-11-12.
@@ -35,63 +31,17 @@ public class Main extends Application{
 	
 	public void start(Stage stage) throws Exception{
 		this.stage = stage;
-		preInit();
-		Scene scene = buildScene(stage);
-		stage.setTitle(this.getFrameTitle());
+		Scene scene = new Scene(createContent());
+		stage.setTitle("Queues");
 		stage.setScene(scene);
 		stage.sizeToScene();
 		//stage.setResizable(false);
-		if(getIcon() != null){
-			setIcon(getIcon());
-		}
-		if(getStageHandler() != null){
-			this.getStageHandler().accept(stage);
-		}
-		if(shouldDisplayAtStart()){
-			stage.show();
-			if(getOnStageDisplayed() != null){
-				this.getOnStageDisplayed().accept(stage);
-			}
-		}
-	}
-	
-	@SuppressWarnings("RedundantThrows")
-	public void preInit() throws Exception{}
-	
-	public Scene buildScene(Stage stage){
-		return new Scene(createContent(stage));
-	}
-	
-	public String getFrameTitle(){
-		return "Queues";
-	}
-	
-	public Image getIcon(){
-		return null;
-	}
-	
-	private void setIcon(Image icon){
-		this.stage.getIcons().clear();
-		this.stage.getIcons().add(icon);
-		Taskbar.getTaskbar().setIconImage(SwingFXUtils.fromFXImage(icon, null));
-	}
-	
-	public Consumer<Stage> getStageHandler(){
-		return stage -> {
-			stage.getScene().getStylesheets().add(Main.class.getResource("/jfx/base.css").toExternalForm());
-		};
-	}
-	
-	public boolean shouldDisplayAtStart(){
-		return true;
-	}
-	
-	public Consumer<Stage> getOnStageDisplayed() throws Exception{
-		return stage -> {};
+		stage.getScene().getStylesheets().add(Main.class.getResource("/jfx/base.css").toExternalForm());
+		stage.show();
 	}
 	
 	@SuppressWarnings("Duplicates")
-	public Parent createContent(Stage stage){
+	private Parent createContent(){
 		var lineIndex = -1;
 		final var s = new Text("Server count: ");
 		final var sInput = new NumberField<>(1);
@@ -236,9 +186,5 @@ public class Main extends Application{
 		VBox.setVgrow(inputs, Priority.ALWAYS);
 		HBox.setHgrow(inputs, Priority.ALWAYS);
 		return root;
-	}
-	
-	public Stage getStage(){
-		return stage;
 	}
 }
