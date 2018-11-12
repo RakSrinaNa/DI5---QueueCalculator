@@ -15,7 +15,7 @@ import javafx.scene.shape.Rectangle;
 public class ProgressCircle extends Group{
 	public static final double radius = 5;
 	
-	public ProgressCircle(double d){
+	public ProgressCircle(double d, Color color){
 		final var rec = new Rectangle();
 		rec.setX(-radius);
 		rec.setY(-radius);
@@ -29,6 +29,7 @@ public class ProgressCircle extends Group{
 		arc.setStartAngle(0f);
 		arc.setLength(d * 360);
 		arc.setType(ArcType.ROUND);
+		arc.setFill(color);
 		
 		getChildren().addAll(rec, arc);
 	}
