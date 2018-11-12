@@ -1,6 +1,7 @@
 package fr.mrcraftcod.queue;
 
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -14,6 +15,7 @@ import javafx.stage.Stage;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Optional;
+import java.util.concurrent.Callable;
 
 /**
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 2018-11-12.
@@ -120,20 +122,21 @@ public class Main extends Application{
 		GridPane.setConstraints(wq, 0, ++lineIndex);
 		GridPane.setConstraints(wqOutput, 1, lineIndex);
 		
-		validButton.setOnAction(e -> {
-			sInput.getStyleClass().remove("invalidState");
-			queueLimitInput.getStyleClass().remove("invalidState");
-			lambdaInput.getStyleClass().remove("invalidState");
-			muInput.getStyleClass().remove("invalidState");
-			lOutput.setText("");
-			lProgress.clear();
-			lqOutput.setText("");
-			lqProgress.clear();
-			wOutput.setText("");
-			wqOutput.setText("");
-			refOutput.setText("");
-			refProgress.clear();
+		final Callable<Void> runnable = () -> {
 			try{
+				sInput.getStyleClass().remove("invalidState");
+				queueLimitInput.getStyleClass().remove("invalidState");
+				lambdaInput.getStyleClass().remove("invalidState");
+				muInput.getStyleClass().remove("invalidState");
+				lOutput.setText("");
+				lProgress.clear();
+				lqOutput.setText("");
+				lqProgress.clear();
+				wOutput.setText("");
+				wqOutput.setText("");
+				refOutput.setText("");
+				refProgress.clear();
+				
 				final var output = Computation.compute(new QueueInput(ProbabilityLaw.POISSON, ProbabilityLaw.EXP, sInput.getInt(), lambdaInput.getDouble(), muInput.getDouble(), queueLimitInput.getInt()));
 				lOutput.setText(RESULT_FORMAT.format(output.getL()));
 				lProgress.setCount(output.getL());
@@ -147,7 +150,6 @@ public class Main extends Application{
 				}).orElse("Undefined"));
 			}
 			catch(BadInputException e2){
-				System.err.println(e2.getMessage());
 				for(var i : e2.getFields()){
 					switch(i){
 						case S:
@@ -165,6 +167,34 @@ public class Main extends Application{
 						default:
 					}
 				}
+				throw e2;
+			}
+			catch(Exception e2){
+				e2.printStackTrace();
+				throw e2;
+			}
+			return null;
+		};
+		
+		ChangeListener<String> changeListener = (observableValue, s1, t1) -> {
+			try{
+				runnable.call();
+			}
+			catch(Exception ignored){
+			}
+		};
+		
+		sInput.textProperty().addListener(changeListener);
+		queueLimitInput.textProperty().addListener(changeListener);
+		lambdaInput.textProperty().addListener(changeListener);
+		muInput.textProperty().addListener(changeListener);
+		
+		validButton.setOnAction(e -> {
+			try{
+				runnable.call();
+			}
+			catch(BadInputException e2){
+				System.err.println(e2.getMessage());
 				Alert alert = new Alert(Alert.AlertType.ERROR);
 				alert.setTitle("Computation error");
 				alert.setHeaderText("Some fields are not completed correctly or lead to an invalid state");

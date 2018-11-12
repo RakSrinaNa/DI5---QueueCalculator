@@ -13,7 +13,7 @@ import java.util.stream.IntStream;
 public class CircleProgress extends HBox{
 	public CircleProgress(){
 		super();
-		setPrefHeight(10);
+		setPrefHeight(2 * ProgressCircle.radius);
 		setMaxWidth(Double.MAX_VALUE);
 	}
 	

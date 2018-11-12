@@ -5,21 +5,21 @@ public class QueueInput{
 	final private ProbabilityLaw lawL;
 	final private ProbabilityLaw lawM;
 	
-	final private int S;
+	final private Integer S;
 	final private Double lambda;
 	final private Double mu;
 	final private Integer limit;
 	
-	public QueueInput(ProbabilityLaw lawL, ProbabilityLaw lawM, int s, Double lambda, Double mu, Integer limit){
+	public QueueInput(ProbabilityLaw lawL, ProbabilityLaw lawM, Integer s, Double lambda, Double mu, Integer limit){
 		this.lawL = lawL;
 		this.lawM = lawM;
-		S = s;
+		this.S = s;
 		this.lambda = lambda;
 		this.mu = mu;
 		this.limit = limit;
 	}
 	
-	public double getLambda(){
+	public Double getLambda(){
 		return lambda;
 	}
 	
@@ -35,11 +35,11 @@ public class QueueInput{
 		return limit;
 	}
 	
-	public double getMu(){
+	public Double getMu(){
 		return mu;
 	}
 	
-	public int getS(){
+	public Integer getS(){
 		return S;
 	}
 }

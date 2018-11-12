@@ -5,14 +5,14 @@ import java.util.Objects;
 class Computation{
 	
 	static QueueResult compute(QueueInput input) throws BadInputException{
-		if(input.getS() < 1){
+		if(Objects.isNull(input.getS()) || input.getS() < 1){
 			throw new BadInputException("Number of waiters must be at least 1", InputField.S);
 		}
 		
-		if(input.getLambda() <= 0){
+		if(Objects.isNull(input.getLambda()) || input.getLambda() <= 0){
 			throw new BadInputException("Lambda must be greater than 0", InputField.LAMBDA);
 		}
-		if(input.getMu() <= 0){
+		if(Objects.isNull(input.getMu()) || input.getMu() <= 0){
 			throw new BadInputException("Mu must be greater than 0", InputField.MU);
 		}
 		
