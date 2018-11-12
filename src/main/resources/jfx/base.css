@@ -1,0 +1,9 @@
+/*noinspection CssInvalidPseudoSelector*/
+.invalidState {
+    -fx-control-inner-background: #FF0000 !important;
+}
+
+/*noinspection CssInvalidPseudoSelector*/
+.progressState {
+    -fx-background-color: #FFAA00;
+}
