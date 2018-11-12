@@ -101,6 +101,15 @@ public class Main extends Application{
 		GridPane.setFillWidth(lqProgress, true);
 		GridPane.setHgrow(lqProgress, Priority.ALWAYS);
 		
+		final var ref = new Text("Average refused: ");
+		final var refOutput = new Text();
+		final var refProgress = new CircleProgress();
+		GridPane.setConstraints(ref, 0, ++lineIndex);
+		GridPane.setConstraints(refOutput, 1, lineIndex);
+		GridPane.setConstraints(refProgress, 0, ++lineIndex, 2, 1);
+		GridPane.setFillWidth(refProgress, true);
+		GridPane.setHgrow(refProgress, Priority.ALWAYS);
+		
 		final var w = new Text("Average wait time in system: ");
 		final var wOutput = new Text();
 		GridPane.setConstraints(w, 0, ++lineIndex);
@@ -110,15 +119,6 @@ public class Main extends Application{
 		final var wqOutput = new Text();
 		GridPane.setConstraints(wq, 0, ++lineIndex);
 		GridPane.setConstraints(wqOutput, 1, lineIndex);
-		
-		final var ref = new Text("Average refused: ");
-		final var refOutput = new Text();
-		final var refProgress = new CircleProgress();
-		GridPane.setConstraints(ref, 0, ++lineIndex);
-		GridPane.setConstraints(refOutput, 1, lineIndex);
-		GridPane.setConstraints(refProgress, 0, ++lineIndex, 2, 1);
-		GridPane.setFillWidth(refProgress, true);
-		GridPane.setHgrow(refProgress, Priority.ALWAYS);
 		
 		validButton.setOnAction(e -> {
 			sInput.getStyleClass().remove("invalidState");
