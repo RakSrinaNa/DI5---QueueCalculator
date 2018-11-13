@@ -8,6 +8,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -41,8 +42,11 @@ public class Main extends Application{
 	public void start(Stage stage) throws Exception{
 		this.stage = stage;
 		Scene scene = new Scene(createContent());
+		// scene.setFill(Color.TRANSPARENT);
 		stage.setTitle("Queues");
 		stage.setScene(scene);
+		// stage.initStyle(StageStyle.TRANSPARENT);
+		stage.setResizable(false);
 		stage.sizeToScene();
 		final var icon = getIcon();
 		if(Objects.nonNull(icon)){
@@ -63,18 +67,22 @@ public class Main extends Application{
 		return null;
 	}
 	
-	private void setIcon(Image icon){
-		try{
-			this.stage.getIcons().clear();
-			this.stage.getIcons().add(icon);
-			Taskbar.getTaskbar().setIconImage(SwingFXUtils.fromFXImage(icon, null));
-		}catch(UnsupportedOperationException e){
-		
-		}
-	}
-	
 	@SuppressWarnings("Duplicates")
 	private Parent createContent(){
+		final var noErrorImage1 = new Image(this.getClass().getResource("/done.png").toExternalForm());
+		final var errorImage1 = new Image(this.getClass().getResource("/noDone.png").toExternalForm());
+		final var doneImageView = new ImageView();
+		doneImageView.setImage(noErrorImage1);
+		doneImageView.setPreserveRatio(true);
+		doneImageView.setFitHeight(500);
+		
+		final var noErrorImage2 = new Image(this.getClass().getResource("/noError.png").toExternalForm());
+		final var errorImage2 = new Image(this.getClass().getResource("/error.jpg").toExternalForm());
+		final var errorImageView = new ImageView();
+		errorImageView.setImage(noErrorImage2);
+		errorImageView.setPreserveRatio(true);
+		errorImageView.setFitHeight(500);
+		
 		var lineIndex = -1;
 		final var s = new Text("Server count: ");
 		final var sInput = new NumberField<>(1);
@@ -109,12 +117,21 @@ public class Main extends Application{
 		GridPane.setFillWidth(muInput, true);
 		GridPane.setHgrow(muInput, Priority.ALWAYS);
 		
+		final var calculating = new Image(this.getClass().getResource("/loading.gif").toExternalForm());
+		final var noCalculating = new Image(this.getClass().getResource("/noCalc.gif").toExternalForm());
+		final var gifLoading = new ImageView();
+		gifLoading.setImage(calculating);
+		gifLoading.setPreserveRatio(true);
+		gifLoading.setFitWidth(400);
 		final var validButton = new Button("Run");
 		validButton.setMaxWidth(Double.MAX_VALUE);
 		validButton.setDefaultButton(true);
 		GridPane.setConstraints(validButton, 0, ++lineIndex, 2, 1);
 		GridPane.setFillWidth(validButton, true);
 		GridPane.setHgrow(validButton, Priority.ALWAYS);
+		GridPane.setConstraints(gifLoading, 0, ++lineIndex, 2, 1);
+		GridPane.setFillWidth(gifLoading, true);
+		GridPane.setHgrow(gifLoading, Priority.ALWAYS);
 		
 		final var l = new Text("Average system size: ");
 		final var lOutput = new Text();
@@ -162,6 +179,9 @@ public class Main extends Application{
 				wOutput.setText("");
 				wqOutput.setText("");
 				refOutput.setText("");
+				doneImageView.setImage(noErrorImage1);
+				errorImageView.setImage(noErrorImage2);
+				gifLoading.setImage(calculating);
 				
 				final var output = Computation.compute(new QueueInput(ProbabilityLaw.POISSON, ProbabilityLaw.EXP, sInput.getInt(), lambdaInput.getDouble(), muInput.getDouble(), queueLimitInput.getInt()));
 				lOutput.setText(RESULT_FORMAT.format(output.getL()));
@@ -173,6 +193,9 @@ public class Main extends Application{
 				refOutput.setText(Optional.ofNullable(output.getRef()).map(PERCENT_FORMAT::format).orElse("Undefined"));
 			}
 			catch(BadInputException e2){
+				doneImageView.setImage(errorImage1);
+				errorImageView.setImage(errorImage2);
+				gifLoading.setImage(noCalculating);
 				for(var i : e2.getFields()){
 					switch(i){
 						case S:
@@ -234,11 +257,12 @@ public class Main extends Application{
 		});
 		
 		GridPane inputs = new GridPane();
-		inputs.getChildren().addAll(s, sInput, queueLimit, queueLimitInput, lambda, lambdaInput, mu, muInput, validButton, l, lOutput, lProgress, lq, lqOutput, lqProgress, w, wOutput, wq, wqOutput, ref, refOutput);
+		inputs.setVgap(10);
+		inputs.getChildren().addAll(s, sInput, queueLimit, queueLimitInput, lambda, lambdaInput, mu, muInput, /*validButton,*/gifLoading, l, lOutput, lProgress, lq, lqOutput, lqProgress, w, wOutput, wq, wqOutput, ref, refOutput);
 		inputs.setMaxWidth(Double.MAX_VALUE);
 		
-		VBox root = new VBox(10);
-		root.getChildren().add(inputs);
+		HBox root = new HBox(10);
+		root.getChildren().addAll(doneImageView, inputs, errorImageView);
 		
 		VBox.setVgrow(inputs, Priority.ALWAYS);
 		HBox.setHgrow(inputs, Priority.ALWAYS);
@@ -246,5 +270,16 @@ public class Main extends Application{
 		validButton.fire();
 		
 		return root;
+	}
+	
+	private void setIcon(Image icon){
+		try{
+			this.stage.getIcons().clear();
+			this.stage.getIcons().add(icon);
+			Taskbar.getTaskbar().setIconImage(SwingFXUtils.fromFXImage(icon, null));
+		}
+		catch(UnsupportedOperationException e){
+		
+		}
 	}
 }
