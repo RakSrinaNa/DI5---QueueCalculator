@@ -49,9 +49,11 @@ class Computation{
 				}
 				
 				double lq = l - (1 - q0);
-				double w = 1.0 / (input.getMu() - input.getLambda());
-				double wq = w * input.getLambda() / input.getMu() * w;
-				double ref = q0 * (Math.pow(input.getS(), input.getS()) * Math.pow(rho, input.getS())) / (fact(input.getS()));
+				//double w = 1.0 / (input.getMu() - input.getLambda());
+				double w = l / (input.getLambda() * (1 - ((1 - rho)*rhoLimit)/(1 - rhoLimit1)));
+				//double wq = w * input.getLambda() / input.getMu();
+				double wq = lq / (input.getLambda() * (1 - ((1 - rho)*rhoLimit)/(1 - rhoLimit1)));
+				double ref = rho == 1? (1 / (input.getLimit() +1.0)): (((1-rho)*rhoLimit)/(1 - (rhoLimit1)));
 				
 				return new QueueResult(lq, l, wq, w, ref);
 			}

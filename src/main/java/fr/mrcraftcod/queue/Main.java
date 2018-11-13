@@ -31,6 +31,7 @@ import java.util.concurrent.Callable;
  */
 public class Main extends Application{
 	private final static NumberFormat RESULT_FORMAT = new DecimalFormat("##.#####");
+	private final static NumberFormat PERCENT_FORMAT = new DecimalFormat("##.##%");
 	private Stage stage;
 	
 	public static void main(String[] args){
@@ -63,9 +64,13 @@ public class Main extends Application{
 	}
 	
 	private void setIcon(Image icon){
-		this.stage.getIcons().clear();
-		this.stage.getIcons().add(icon);
-		Taskbar.getTaskbar().setIconImage(SwingFXUtils.fromFXImage(icon, null));
+		try{
+			this.stage.getIcons().clear();
+			this.stage.getIcons().add(icon);
+			Taskbar.getTaskbar().setIconImage(SwingFXUtils.fromFXImage(icon, null));
+		}catch(UnsupportedOperationException e){
+		
+		}
 	}
 	
 	@SuppressWarnings("Duplicates")
@@ -131,12 +136,8 @@ public class Main extends Application{
 		
 		final var ref = new Text("Average refused: ");
 		final var refOutput = new Text();
-		final var refProgress = new CircleProgress();
 		GridPane.setConstraints(ref, 0, ++lineIndex);
 		GridPane.setConstraints(refOutput, 1, lineIndex);
-		GridPane.setConstraints(refProgress, 0, ++lineIndex, 2, 1);
-		GridPane.setFillWidth(refProgress, true);
-		GridPane.setHgrow(refProgress, Priority.ALWAYS);
 		
 		final var w = new Text("Average wait time in system: ");
 		final var wOutput = new Text();
@@ -161,7 +162,6 @@ public class Main extends Application{
 				wOutput.setText("");
 				wqOutput.setText("");
 				refOutput.setText("");
-				refProgress.clear();
 				
 				final var output = Computation.compute(new QueueInput(ProbabilityLaw.POISSON, ProbabilityLaw.EXP, sInput.getInt(), lambdaInput.getDouble(), muInput.getDouble(), queueLimitInput.getInt()));
 				lOutput.setText(RESULT_FORMAT.format(output.getL()));
@@ -170,10 +170,7 @@ public class Main extends Application{
 				lqProgress.setCount(output.getLq());
 				wOutput.setText(RESULT_FORMAT.format(output.getW()));
 				wqOutput.setText(RESULT_FORMAT.format(output.getWq()));
-				refOutput.setText(Optional.ofNullable(output.getRef()).map(ee -> {
-					refProgress.setCount(ee);
-					return RESULT_FORMAT.format(ee);
-				}).orElse("Undefined"));
+				refOutput.setText(Optional.ofNullable(output.getRef()).map(PERCENT_FORMAT::format).orElse("Undefined"));
 			}
 			catch(BadInputException e2){
 				for(var i : e2.getFields()){
@@ -237,7 +234,7 @@ public class Main extends Application{
 		});
 		
 		GridPane inputs = new GridPane();
-		inputs.getChildren().addAll(s, sInput, queueLimit, queueLimitInput, lambda, lambdaInput, mu, muInput, validButton, l, lOutput, lProgress, lq, lqOutput, lqProgress, w, wOutput, wq, wqOutput, ref, refOutput, refProgress);
+		inputs.getChildren().addAll(s, sInput, queueLimit, queueLimitInput, lambda, lambdaInput, mu, muInput, validButton, l, lOutput, lProgress, lq, lqOutput, lqProgress, w, wOutput, wq, wqOutput, ref, refOutput);
 		inputs.setMaxWidth(Double.MAX_VALUE);
 		
 		VBox root = new VBox(10);
