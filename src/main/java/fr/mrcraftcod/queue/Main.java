@@ -85,7 +85,7 @@ public class Main extends Application{
 		GridPane.setFillWidth(sInput, true);
 		GridPane.setHgrow(sInput, Priority.ALWAYS);
 		
-		final var queueLimit = new Text("Queue limit: ");
+		final var queueLimit = new Text("System limit: ");
 		final var queueLimitInput = new NumberField<Double>(null);
 		queueLimitInput.setMaxWidth(Double.MAX_VALUE);
 		GridPane.setConstraints(queueLimit, 0, ++lineIndex);

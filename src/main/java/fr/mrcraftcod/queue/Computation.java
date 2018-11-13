@@ -33,11 +33,14 @@ class Computation{
 				final double rhoLimit1 = Math.pow(rho, input.getLimit() + 1);
 				
 				double q0;
+				double qk;
 				if(rho == 1){
 					q0 = 1.0 / (input.getLimit() + 1);
+					qk = q0;
 				}
 				else{
 					q0 = (1.0 - rho) / (1.0 - rhoLimit1);
+					qk = ((1.0 - rho) * rhoLimit) / (1.0 - rhoLimit1);
 				}
 				
 				double l;
@@ -50,9 +53,9 @@ class Computation{
 				
 				double lq = l - (1 - q0);
 				//double w = 1.0 / (input.getMu() - input.getLambda());
-				double w = l / (input.getLambda() * (1 - ((1 - rho)*rhoLimit)/(1 - rhoLimit1)));
+				double w = l / (input.getLambda() * (1 - qk));
 				//double wq = w * input.getLambda() / input.getMu();
-				double wq = lq / (input.getLambda() * (1 - ((1 - rho)*rhoLimit)/(1 - rhoLimit1)));
+				double wq = lq / (input.getLambda() * (1 - qk));
 				double ref = rho == 1? (1 / (input.getLimit() +1.0)): (((1-rho)*rhoLimit)/(1 - (rhoLimit1)));
 				
 				return new QueueResult(lq, l, wq, w, ref);

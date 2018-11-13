@@ -8,12 +8,20 @@ public class QueueResult{
 	final private double w;
 	final private Double ref;
 	
-	public QueueResult(double lq, double l, double wq, double w, Double ref){
-		this.lq = lq;
-		this.l = l;
-		this.wq = wq;
-		this.w = w;
-		this.ref = ref;
+	public QueueResult(Double lq, Double l, Double wq, Double w, Double ref){
+		this.lq = getGood(lq);
+		this.l = getGood(l);
+		this.wq = getGood(wq);
+		this.w = getGood(w);
+		this.ref = getGood(ref);
+	}
+	
+	private Double getGood(Double ref){
+		if(ref == null)
+			return null;
+		if(Math.abs(ref) < 1e-10)
+			return 0D;
+		return ref;
 	}
 	
 	public double getL(){
