@@ -1,18 +1,21 @@
 package fr.mrcraftcod.queue;
 
+import java.util.HashMap;
 import java.util.Objects;
 
 class Computation{
 	
+	private static final HashMap<Integer, Integer> facts = new HashMap<>();
+	
 	static QueueResult compute(QueueInput input) throws BadInputException{
-		if(input.getS() < 1){
+		if(Objects.isNull(input.getS()) || input.getS() < 1){
 			throw new BadInputException("Number of waiters must be at least 1", InputField.S);
 		}
 		
-		if(input.getLambda() <= 0){
+		if(Objects.isNull(input.getLambda()) || input.getLambda() <= 0){
 			throw new BadInputException("Lambda must be greater than 0", InputField.LAMBDA);
 		}
-		if(input.getMu() <= 0){
+		if(Objects.isNull(input.getMu()) || input.getMu() <= 0){
 			throw new BadInputException("Mu must be greater than 0", InputField.MU);
 		}
 		
@@ -25,12 +28,19 @@ class Computation{
 		if(input.getLimit() != null){
 			if(input.getS() == 1){
 				//M|M|1|K
+				
+				final double rhoLimit = Math.pow(rho, input.getLimit());
+				final double rhoLimit1 = Math.pow(rho, input.getLimit() + 1);
+				
 				double q0;
+				double qk;
 				if(rho == 1){
 					q0 = 1.0 / (input.getLimit() + 1);
+					qk = q0;
 				}
 				else{
-					q0 = ((1.0 - rho)) / (1.0 - Math.pow(rho, input.getLimit() + 1));
+					q0 = (1.0 - rho) / (1.0 - rhoLimit1);
+					qk = ((1.0 - rho) * rhoLimit) / (1.0 - rhoLimit1);
 				}
 				
 				double l;
@@ -38,16 +48,15 @@ class Computation{
 					l = input.getLimit() / 2.0;
 				}
 				else{
-					l = rho * (1.0 - ((input.getLimit() + 1) * Math.pow(rho, input.getLimit())) + (input.getLimit() * Math.pow(rho, input.getLimit() + 1))) / ((1.0 - rho) * (1.0 - Math.pow(rho, input.getLimit() + 1)));
+					l = rho * (1.0 - ((input.getLimit() + 1) * rhoLimit) + (input.getLimit() * rhoLimit1)) / ((1.0 - rho) * (1.0 - rhoLimit1));
 				}
 				
 				double lq = l - (1 - q0);
-				
-				double w = 1.0 / (input.getMu() - input.getLambda());
-				
-				double wq = (input.getLambda() / input.getMu()) * w;
-				
-				double ref = q0 * (Math.pow(input.getS(), input.getS()) * Math.pow(rho, input.getS())) / (fact(input.getS()));
+				//double w = 1.0 / (input.getMu() - input.getLambda());
+				double w = l / (input.getLambda() * (1 - qk));
+				//double wq = w * input.getLambda() / input.getMu();
+				double wq = lq / (input.getLambda() * (1 - qk));
+				double ref = rho == 1? (1 / (input.getLimit() +1.0)): (((1-rho)*rhoLimit)/(1 - (rhoLimit1)));
 				
 				return new QueueResult(lq, l, wq, w, ref);
 			}
@@ -62,15 +71,16 @@ class Computation{
 			}
 			
 			//Q0
+			final double powS = Math.pow(rho * input.getS(), input.getS());
 			double sumQ0 = 0;
 			for(int i = 0; i < input.getS(); i++){
 				sumQ0 += Math.pow(rho * input.getS(), i) / fact(i);
 			}
-			sumQ0 += Math.pow(rho * input.getS(), input.getS()) / (fact(input.getS()) * (1 - rho));
+			sumQ0 += powS / (fact(input.getS()) * (1 - rho));
 			
-			double q0 = 1.0 / (sumQ0);
+			double q0 = 1.0 / sumQ0;
 			
-			double lq = q0 * ((Math.pow(rho * input.getS(), input.getS()) * rho) / (fact(input.getS()) * Math.pow(1 - rho, 2)));
+			double lq = q0 * ((powS * rho) / (fact(input.getS()) * Math.pow(1 - rho, 2)));
 			double wq = lq / input.getLambda();
 			double w = wq + 1 / input.getMu();
 			double l = input.getLambda() * w;
@@ -80,9 +90,11 @@ class Computation{
 	}
 	
 	private static int fact(int f){
-		if(f <= 1){
-			return 1;
-		}
-		return f * fact(f - 1);
+		return facts.computeIfAbsent(f, ff -> {
+			if(ff <= 1){
+				return 1;
+			}
+			return ff * fact(ff - 1);
+		});
 	}
 }

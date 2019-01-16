@@ -43,7 +43,7 @@ public class NumberField<T> extends TextField{
 	 * @return True if a number matching the verifier, false else.
 	 */
 	protected boolean validate(String text){
-		return text.matches("[0-9]*");
+		return text.length() <= 3 && text.matches("[0-9]*");
 	}
 	
 	/**

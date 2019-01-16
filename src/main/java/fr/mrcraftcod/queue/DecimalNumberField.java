@@ -35,7 +35,7 @@ public class DecimalNumberField extends NumberField<Double>{
 	 */
 	@Override
 	protected boolean validate(String text){
-		return text.matches("[0-9]*(\\.[0-9]*)?");
+		return text.length() <= 7 && text.matches("[0-9]*(\\.[0-9]*)?");
 	}
 	
 	/**
